@@ -1,4 +1,4 @@
-# Overhead by Time-Multiplexing Qubit Control
+# Overhead in Quantum Circuits with Time-Multiplexed Qubit Control
 This is a placeholder repository for the accompanying code to the publication.
 
 M. Richter, I. Strandberg, S. Gasparinetti, and A. F. Kockum, Overhead in Quantum Circuits with Time-Multiplexed Qubit Control, arXiv:2508.20752.
