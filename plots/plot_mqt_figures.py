@@ -1,9 +1,4 @@
-from plot_settings import (
-    SINGLE_COLUMN_WIDTH,
-    DOUBLE_COLUMN_WIDTH,
-    wong_colors,
-    ROOT,
-)
+from plot_settings import SINGLE_COLUMN_WIDTH, DOUBLE_COLUMN_WIDTH, wong_colors, RESULTS_DIR
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -65,17 +60,17 @@ def plot_figure(specifier: str) -> plt.Figure:
     df = pl.concat(
         [
             # 11x11 grid data
-            pl.read_parquet(ROOT / "results" / "20260302-224810_mqt_11x11_N2700.parquet"),
+            pl.read_parquet(RESULTS_DIR / "20260302-224810_mqt_11x11_N2700.parquet"),
             # addition 11x11 grid data for k=[14]
-            pl.read_parquet(ROOT / "results" / "20260303-215921_mqt_11x11_N540.parquet"),
+            pl.read_parquet(RESULTS_DIR / "20260303-215921_mqt_11x11_N540.parquet"),
             # brisbane data
-            pl.read_parquet(ROOT / "results" / "20260303-151441_mqt_brisbane_N2700.parquet"),
+            pl.read_parquet(RESULTS_DIR / "20260303-151441_mqt_brisbane_N2700.parquet"),
             # additional brisbane mqt data for k=[13]
-            pl.read_parquet(ROOT / "results" / "20260303-204352_mqt_brisbane_N540.parquet"),
+            pl.read_parquet(RESULTS_DIR / "20260303-204352_mqt_brisbane_N540.parquet"),
             # 5x5 grid data
-            pl.read_parquet(ROOT / "results" / "20260302-224033_mqt_5x5_N2160.parquet"),
+            pl.read_parquet(RESULTS_DIR / "20260302-224033_mqt_5x5_N2160.parquet"),
             # additional 5x5 mqt data for k=[3, 5, 9]
-            pl.read_parquet(ROOT / "results" / "20260303-212759_mqt_5x5_N1620.parquet"),
+            pl.read_parquet(RESULTS_DIR / "20260303-212759_mqt_5x5_N1620.parquet"),
         ]
     ).with_columns(
         (pl.col("T_routed_serial") / pl.col("T_routed")).alias("overhead_serial_rel_routing"),
@@ -423,6 +418,178 @@ def plot_figure(specifier: str) -> plt.Figure:
         raise ValueError(f"Unknown figure id: {fig_id!r}. Expected 'line' or 'hist'.")
 
 
+# ============================================================================
+# Detail figures
+# ============================================================================
+
+_DETAIL_CIRCUIT_ID_ORDER = [
+    "bv",
+    "graphstate",
+    "dj",
+    "ghz",
+    "wstate",
+    "qnn",
+    "vqe_real_amp",
+    "vqe_su2",
+    "cdkm_ripple_carry_adder",
+    "full_adder",
+    "vbe_ripple_carry_adder",
+    "bmw_quark_cardinality",
+    "half_adder",
+    "qft",
+    "qftentangled",
+    "qpeexact",
+    "qpeinexact",
+    "modular_adder",
+    "draper_qft_adder",
+    "qaoa",
+    "bmw_quark_copula",
+    "vqe_two_local",
+    "hhl",
+    "randomcircuit",
+    "hrs_cumulative_multiplier",
+    "rg_qft_multiplier",
+    "shor",
+]
+_DETAIL_ORDER_MAPPING = {cid: i for i, cid in enumerate(_DETAIL_CIRCUIT_ID_ORDER)}
+
+
+def _load_detail_df() -> pl.DataFrame:
+    return pl.concat(
+        [
+            pl.read_parquet(RESULTS_DIR / "20260302-224810_mqt_11x11_N2700.parquet"),
+            pl.read_parquet(RESULTS_DIR / "20260303-215921_mqt_11x11_N540.parquet"),
+            pl.read_parquet(RESULTS_DIR / "20260304-122936_mqt_11x11_N540.parquet"),
+            pl.read_parquet(RESULTS_DIR / "20260303-151441_mqt_brisbane_N2700.parquet"),
+            pl.read_parquet(RESULTS_DIR / "20260303-204352_mqt_brisbane_N540.parquet"),
+            pl.read_parquet(RESULTS_DIR / "20260304-125224_mqt_brisbane_N540.parquet"),
+            pl.read_parquet(RESULTS_DIR / "20260302-224033_mqt_5x5_N2160.parquet"),
+            pl.read_parquet(RESULTS_DIR / "20260303-212759_mqt_5x5_N1620.parquet"),
+        ]
+    )
+
+
+def _plot_detail_ax(
+    ax: plt.Axes,
+    df: pl.DataFrame,
+    hardware: str,
+    qpg_values: list[int],
+    caption: str,
+) -> None:
+    """Populate one subplot of a detail figure."""
+    markers = ["o", "s", "^", "D", "v", "<", ">", "p", "h", "*"]
+
+    df_hardware = df.filter(
+        (pl.col("hardware.layout.strategy") == "trivial") & (pl.col("hardware.id") == hardware)
+    )
+
+    df_plot = (
+        df_hardware.group_by("circuit.id", "hardware.layout.k").agg(
+            min_qc_num_gates=pl.col("qc_trans_num_gates").min(),
+            serial_overhead=(pl.col("T_routed_serial") - pl.col("T_routed")).median(),
+        )
+    ).sort("min_qc_num_gates", "hardware.layout.k")
+
+    for i, qpg in enumerate(qpg_values):
+        df_qpg = (
+            df_plot.filter(pl.col("hardware.layout.k") == qpg)
+            .with_columns(
+                pl.col("circuit.id")
+                .map_elements(
+                    lambda x: _DETAIL_ORDER_MAPPING.get(x, len(_DETAIL_CIRCUIT_ID_ORDER)),
+                    return_dtype=pl.Int32,
+                )
+                .alias("sort_order")
+            )
+            .sort("sort_order")
+        )
+        ax.semilogy(
+            df_qpg["sort_order"].to_numpy(),
+            df_qpg["serial_overhead"],
+            color=wong_colors[i + 1],
+            marker=markers[i],
+            markersize=3,
+            linestyle="",
+            label=f"{qpg} qubits per switch",
+            alpha=0.9,
+            zorder=-i,
+        )
+
+    ax.set_xticks(range(len(_DETAIL_CIRCUIT_ID_ORDER)))
+    ax.set_xticklabels(
+        [k if k != "shor" else "shor_{58q,18q}" for k in _DETAIL_CIRCUIT_ID_ORDER],
+        rotation=30,
+        ha="right",
+        va="top",
+    )
+
+    ax.set_ylabel("Overhead (s)")
+    ax.legend(loc="lower right")
+    ax.grid(True, which="both", axis="x")
+
+    ax.text(
+        0,
+        1,
+        caption,
+        transform=ax.transAxes,
+        fontweight="bold",
+        fontsize=10,
+        ha="right",
+        va="bottom",
+    )
+
+    if hardware == "11x11":
+        ax.set_ylim(top=0.3)
+        inset_ax = ax.inset_axes([-0.07, 0.55, 0.4, 0.4])
+        plot_grid121(inset_ax)
+    elif hardware == "5x5":
+        inset_ax = ax.inset_axes([-0.07, 0.55, 0.4, 0.4])
+        plot_grid25(inset_ax)
+    elif hardware == "brisbane":
+        inset_ax = ax.inset_axes([-0.07, 0.55, 0.4, 0.4])
+        plot_brisbane(inset_ax)
+
+
+def plot_detail_grid() -> plt.Figure:
+    """Detail figure: 11x11 grid (top) and 5x5 grid (bottom)."""
+    df = _load_detail_df()
+
+    fig, axes = plt.subplots(
+        figsize=(DOUBLE_COLUMN_WIDTH, SINGLE_COLUMN_WIDTH * 1.01),
+        dpi=200,
+        layout="constrained",
+        nrows=2,
+        sharex=True,
+    )
+    axes = axes.flatten()
+
+    for hx, (hardware, qpg_values) in enumerate([("11x11", [2, 4]), ("5x5", [2, 4])]):
+        _plot_detail_ax(
+            axes[hx],
+            df,
+            hardware,
+            qpg_values,
+            caption=f"({'ab'[hx]})",
+        )
+
+    return fig
+
+
+def plot_detail_brisbane() -> plt.Figure:
+    """Detail figure: Brisbane hardware only."""
+    df = _load_detail_df()
+
+    fig, ax = plt.subplots(
+        figsize=(DOUBLE_COLUMN_WIDTH, SINGLE_COLUMN_WIDTH),
+        dpi=200,
+        layout="constrained",
+    )
+
+    _plot_detail_ax(ax, df, "brisbane", [2, 4], caption="(a)")
+
+    return fig
+
+
 if __name__ == "__main__":
     for specifier in (
         "line_11x11",
@@ -433,4 +600,8 @@ if __name__ == "__main__":
         "hist_5x5",
     ):
         fig = plot_figure(specifier)
-        plt.show()
+
+    fig = plot_detail_grid()
+
+    fig = plot_detail_brisbane()
+    plt.show()

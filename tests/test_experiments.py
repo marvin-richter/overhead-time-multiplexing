@@ -68,6 +68,29 @@ class TestLoadExperiments:
         # assert that there are multiple circuit names in the MQT config
         assert df["circuit.id"].n_unique() > 10
 
+    def test_mqt_11x11(self):
+        # Load and expand
+        experiments = load_experiments(Path("configs/paper/fig4_mqt_11x11.yaml"))
+        assert len(experiments) > 0, "No experiments generated from config"
+
+        # Each experiment is a validated ExperimentConfig ready for workers
+        for exp in experiments[:3]:
+            print(f"  - {exp.exp_id}: {exp.hardware.id} k={exp.hardware.layout.k}")
+
+        rows = []
+        for exp in experiments:
+            rows.append(flatten_config(exp))
+
+        df = pl.DataFrame(rows)
+        assert len(df) == len(experiments), (
+            "Flattened DataFrame should have same number of rows as experiments"
+        )
+        # assert that there are multiple circuit names in the MQT config
+        assert df["circuit.id"].n_unique() > 10
+        assert len(df) == 27 * 7 * 20, (
+            f"Expected 27 circuits * 7 k values * 20 seeds = 3780 experiments, got {len(df)}"
+        )
+
     def test_mqt_qft(self):
         path_config = Path("configs/paper/fig6_qft_grids.yaml")
         experiments = load_experiments(path_config)

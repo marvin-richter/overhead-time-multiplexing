@@ -5,7 +5,8 @@ hardware:
     id: "11x11"
     
 layouts: ["trivial"]
-k: [2, 3, 8, 14, 31, 121] #"balanced"
+k: [2, 3, 4, 8, 14, 31, 121]
+
 layout_seed: "fix"
 num_layout_seeds: 1
 

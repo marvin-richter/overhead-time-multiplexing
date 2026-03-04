@@ -5,7 +5,7 @@ hardware:
     id: "brisbane"
 
 layouts: ["trivial"]
-k: [2, 3, 8, 13, 26, 127] #"balanced"
+k: [2, 3, 4, 8, 13, 26, 127]
 layout_seed: "fix"
 
 source: "mqt"

@@ -74,7 +74,7 @@ Generated data is saved to `results/`.
 
 ## Reproducing the figures
 
-`plots/plots.ipynb` provides an overview of all figures in the publication, including comments on which configs were used.
+[`plots/plots.ipynb`](plots/plots.ipynb) provides an overview of all figures in the publication, including comments on which configs were used.
 
 Most data can be regenerated with the configs in `configs/paper/`. A few figures (8, 9, 10, and 24) rely on data generated with an earlier version of this code due to the high runtime of the underlying simulations. The corresponding data is provided in `results/`, with configs to reproduce it also included.
 
