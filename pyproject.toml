@@ -1,0 +1,73 @@
+[project]
+authors = [
+    { name = "Marvin Richter" },
+    { name = "Ingrid Strandberg" },
+    { name = "Simone Gasparinetti" },
+    { name = "Anton Frisk Kockum" },
+]
+name = "overhead-time-multiplexing"
+version = "1.0"
+description = "Serialization from time-multiplexing single qubit control with the goal of estimating the overhead implied on the circuit duration."
+license = { file = "LICENSE" }
+readme = "README.md"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+]
+requires-python = ">=3.12"
+dependencies = [
+    "matplotlib>=3.10.8",
+    "mqt-bench>=2.1.0",
+    "mqt-qcec>=3.5.0",
+    "polars>=1.38.1",
+    "pyyaml>=6.0.3",
+    "qiskit>=2.3.0",
+    "qiskit-ibm-runtime>=0.45.1",
+    "tqdm>=4.67.3",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/overhead_time_multiplexing"]
+
+
+[tool.ruff]
+line-length = 99
+exclude = [".git", "references", "models", "data"]
+
+[tool.ruff.format]
+# Enable the formatter
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
+[tool.ruff.lint]
+ignore = ["E731", "E266", "E501", "C901"]
+# unfixable = ["F401"]                      # dont remove unused imports
+
+[tool.ruff.lint.isort]
+known-first-party = ["overhead-time-multiplexing"]
+force-sort-within-sections = true
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+    "pytest-cov>=7.0.0",
+    "ruff>=0.15.4",
+    "jupyterlab>=4.0.0",
+]
+plot = ["pygraphviz>=1.14", "textalloc>=1.2.1"]
+
+[tool.uv]
+default-groups = ["plot", "dev"]
+
+
+[tool.pytest.ini_options]
+# qiskit-ibm-runtime 0.45.1 emits warning, can be ignored here
+filterwarnings = [
+    "ignore:Properties of fake_nighthawk are not intended to represent typical nighthawk error values.",
+]

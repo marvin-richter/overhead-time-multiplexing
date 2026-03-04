@@ -1,0 +1,27 @@
+experiment_name: "mqt_5x5"
+
+hardware: 
+  - kind: "chalmers_grid"
+    id: "5x5"
+
+layouts: ["trivial"]
+k: [2, 3, 4, 5, 9, 13, 25]
+layout_seed: "fix"
+
+source: "mqt"
+circuits:
+  bench_num_qubits: "max"
+  names: []
+  num_transpiler_seeds: 20
+
+
+qpg_low_limit: 1
+virtual_rz: true
+optimization_level: 2
+
+generic_gate_durations: 
+  single_qubit_gate: [20e-9]
+  two_qubit_gate: [200e-9]
+  switch_gate: [02e-9]
+
+topord_method: ["prio_two"]

@@ -1,0 +1,51 @@
+experiment_name: "qft_grids"
+
+hardware: 
+  - kind: "chalmers_grid"
+    id: "35x35"
+  - kind: "chalmers_grid"
+    id: "32x32"
+  - kind: "chalmers_grid"
+    id: "29x29"
+  - kind: "chalmers_grid"
+    id: "25x25"
+  - kind: "chalmers_grid"
+    id: "20x20"
+  - kind: "chalmers_grid"
+    id: "15x15"
+  - kind: "chalmers_grid"
+    id: "12x12"
+  - kind: "chalmers_grid"
+    id: "10x10"
+  - kind: "chalmers_grid"
+    id: "8x8"
+  - kind: "chalmers_grid"
+    id: "6x6"
+  - kind: "chalmers_grid"
+    id: "4x4"
+  - kind: "chalmers_grid"
+    id: "3x3"
+  - kind: "chalmers_grid"
+    id: "2x2"
+
+layouts: ["trivial"]
+k: [2, 4, 8] #"balanced"
+layout_seed: "fix"
+
+source: "mqt"
+circuits:
+  bench_num_qubits: "max"
+  names: ["qft"]
+  num_transpiler_seeds: 5
+
+
+qpg_low_limit: 1
+virtual_rz: true
+optimization_level: 1
+
+generic_gate_durations: 
+  single_qubit_gate: [20e-9]
+  two_qubit_gate: [200e-9]
+  switch_gate: [02e-9]
+
+topord_method: ["prio_two"]

@@ -1,0 +1,26 @@
+experiment_name: "random_gates_11x11"
+
+hardware: 
+  - kind: "chalmers_grid"
+    id: "11x11"
+  
+layouts: ["trivial"]
+k: [2, 3, 8, 13, 31, 121] #"balanced"
+layout_seed: "fix"
+
+source: "random"
+circuits:
+  num_circuits: 100
+  # num_gates: [100, 250] # 25000 or [25000] or {start: 100, stop: 1000, step: 100}
+  num_gates: [500, 1000, 2000, 4000, 6000, 8000, 10000]
+
+qpg_low_limit: 1
+virtual_rz: true
+optimization_level: 1
+
+generic_gate_durations: 
+  single_qubit_gate: [20e-9]
+  two_qubit_gate: [200e-9]
+  switch_gate: [02e-9]
+
+topord_method: ["prio_two"]

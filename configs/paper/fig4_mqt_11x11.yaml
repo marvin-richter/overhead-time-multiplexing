@@ -1,0 +1,28 @@
+experiment_name: "mqt_11x11"
+
+hardware: 
+  - kind: "chalmers_grid"
+    id: "11x11"
+    
+layouts: ["trivial"]
+k: [2, 3, 8, 14, 31, 121] #"balanced"
+layout_seed: "fix"
+num_layout_seeds: 1
+
+source: "mqt"
+circuits:
+  bench_num_qubits: "max"
+  names: []
+  num_transpiler_seeds: 20
+
+
+qpg_low_limit: 1
+virtual_rz: true
+optimization_level: 1
+
+generic_gate_durations: 
+  single_qubit_gate: [20e-9]
+  two_qubit_gate: [200e-9]
+  switch_gate: [02e-9]
+
+topord_method: ["prio_two"]

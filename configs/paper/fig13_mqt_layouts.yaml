@@ -1,0 +1,27 @@
+experiment_name: "mqt_layouts"
+
+hardware: 
+  - kind: "chalmers_grid"
+    id: "11x11"
+  
+layouts: ["trivial", "clustered", "random", "dispersed"]
+k: "balanced"
+layout_seed: "random"
+
+source: "mqt"
+circuits:
+  bench_num_qubits: "max"
+  names: ["shor", "qaoa", "qpeexact", "randomcircuit"]
+  num_transpiler_seeds: 1
+
+qpg_low_limit: 1
+virtual_rz: true
+optimization_level: 1
+
+generic_gate_durations: 
+  single_qubit_gate: [20e-9]
+  two_qubit_gate: [200e-9]
+  switch_gate: [02e-9]
+
+topord_method: ["prio_two"]
+delay_check: [True]

@@ -1,0 +1,58 @@
+experiment_name: "random_grids"
+
+hardware: 
+  - kind: "chalmers_grid"
+    id: "35x35"
+  - kind: "chalmers_grid"
+    id: "32x32"
+  - kind: "chalmers_grid"
+    id: "29x29"
+  - kind: "chalmers_grid"
+    id: "25x25"
+  - kind: "chalmers_grid"
+    id: "20x20"
+  - kind: "chalmers_grid"
+    id: "15x15"
+  - kind: "chalmers_grid"
+    id: "12x12"
+  - kind: "chalmers_grid"
+    id: "10x10"
+  - kind: "chalmers_grid"
+    id: "8x8"
+  - kind: "chalmers_grid"
+    id: "6x6"
+  - kind: "chalmers_grid"
+    id: "4x4"
+  - kind: "chalmers_grid"
+    id: "3x3"
+  - kind: "chalmers_grid"
+    id: "2x2"
+
+layouts: ["trivial"]
+k: [2, 4, 8] #"balanced"
+layout_seed: "fix"
+
+source: "random_densities"
+circuits:
+  rho_1: [0.2, 0.18]
+  rho_tot: [ 0.4] 
+  num_circuits: 20
+  # Depths can be fixed values or scaling formulas:
+  #   Fixed: [30, 50, 100]
+  #   Scaling: ["n", "n^2", "n^3", "n*log(n)"]
+  #   With coefficient: ["2*n", "0.5*n^2"]
+  #   Mixed: [30, "n", "n^2"]
+  depths: ["n"]
+  connectivity: "full" # native or full
+
+
+qpg_low_limit: 1
+virtual_rz: true
+optimization_level: 2
+
+generic_gate_durations: 
+  single_qubit_gate: [20e-9]
+  two_qubit_gate: [200e-9]
+  switch_gate: [02e-9]
+
+topord_method: ["prio_two"]

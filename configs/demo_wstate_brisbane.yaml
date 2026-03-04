@@ -1,0 +1,29 @@
+experiment_name: "demo_wstate_brisbane"
+
+hardware: 
+  - kind: "ibm"
+    id: "brisbane"
+  
+layouts: ["trivial"]
+k: [2,4,8] #"balanced"
+layout_seed: "fix"
+
+source: "mqt"
+circuits:
+  names: ["wstate"]
+  num_transpiler_seeds: 20
+
+
+needs_translation: true
+needs_routing: true
+
+qpg_low_limit: 1
+virtual_rz: true
+optimization_level: 1
+
+generic_gate_durations: 
+  single_qubit_gate: [20e-9]
+  two_qubit_gate: [200e-9]
+  switch_gate: [02e-9]
+
+topord_method: ["prio_two"]
