@@ -1,5 +1,9 @@
 # Overhead in Quantum Circuits with Time-Multiplexed Qubit Control
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18864897.svg)](https://doi.org/10.5281/zenodo.18864897)
+[![PRX Quantum](https://img.shields.io/badge/PRX%20Quantum-10.1103%2F82cj--lfzy-blue)](https://doi.org/10.1103/82cj-lfzy)
+[![Tests](https://github.com/marvin-richter/overhead-time-multiplexing/actions/workflows/tests.yml/badge.svg)](https://github.com/marvin-richter/overhead-time-multiplexing/actions/workflows/tests.yml)
+
 Code repository accompanying the publication:
 
 > **Overhead in quantum circuits with time-multiplexed qubit control**
