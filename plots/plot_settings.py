@@ -17,7 +17,7 @@ if ROOT.name != "overhead-time-multiplexing":
         f"Expected base path to be 'overhead-time-multiplexing', but got '{ROOT.name}'"
     )
 RESULTS_DIR = ROOT / "results"
-PLOT_DIR = ROOT / "plots"
+PLOT_DIR = ROOT / "plots" / "pdf"
 if not PLOT_DIR.exists():
     PLOT_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -593,11 +593,12 @@ def save_fig(fig, name):
     dark_fig = convert_fig_to_dark(fig)
 
     # Ensure dark directory exists
-    dark_dir = PLOT_DIR / "dark"
+    # dark_dir = PLOT_DIR / "dark"
+    dark_dir = PLOT_DIR
     dark_dir.mkdir(parents=True, exist_ok=True)
 
     dark_fig.savefig(
-        dark_dir / f"{name}.pdf",
+        dark_dir / f"{name}_dark.pdf",
         dpi=300,
         bbox_inches="tight",
         pad_inches=0.02,

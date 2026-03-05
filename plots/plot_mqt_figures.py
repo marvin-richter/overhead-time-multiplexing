@@ -540,10 +540,10 @@ def _plot_detail_ax(
 
     if hardware == "11x11":
         ax.set_ylim(top=0.3)
-        inset_ax = ax.inset_axes([-0.07, 0.55, 0.4, 0.4])
+        inset_ax = ax.inset_axes([-0.14, 0.55, 0.4, 0.4])
         plot_grid121(inset_ax)
     elif hardware == "5x5":
-        inset_ax = ax.inset_axes([-0.07, 0.55, 0.4, 0.4])
+        inset_ax = ax.inset_axes([-0.14, 0.55, 0.4, 0.4])
         plot_grid25(inset_ax)
     elif hardware == "brisbane":
         inset_ax = ax.inset_axes([-0.07, 0.55, 0.4, 0.4])
@@ -563,7 +563,7 @@ def plot_detail_grid() -> plt.Figure:
     )
     axes = axes.flatten()
 
-    for hx, (hardware, qpg_values) in enumerate([("11x11", [2, 4]), ("5x5", [2, 4])]):
+    for hx, (hardware, qpg_values) in enumerate([("11x11", [4, 2]), ("5x5", [4, 2])]):
         _plot_detail_ax(
             axes[hx],
             df,
@@ -585,7 +585,7 @@ def plot_detail_brisbane() -> plt.Figure:
         layout="constrained",
     )
 
-    _plot_detail_ax(ax, df, "brisbane", [2, 4], caption="(a)")
+    _plot_detail_ax(ax, df, "brisbane", [4, 2], caption="(a)")
 
     return fig
 
