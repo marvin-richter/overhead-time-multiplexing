@@ -590,6 +590,49 @@ def plot_detail_brisbane() -> plt.Figure:
     return fig
 
 
+def print_paper_values() -> None:
+    """Print the serialization overhead values cited in the paper (k=2, trivial layout).
+
+    Algorithms: GHZ, QNN, graph state, QFT, QAOA, W-state.
+    Hardware:   5x5 (25-qubit grid), 11x11 (121-qubit grid), brisbane (127-qubit Eagle).
+    Metric:     median of (T_routed_serial - T_routed) across random seeds.
+    """
+    df = _load_detail_df()
+
+    algorithms = ["ghz", "qnn", "graphstate", "qft", "qaoa", "wstate"]
+    hardwares = ["11x11", "brisbane", "5x5"]
+
+    result = (
+        df.filter(
+            (pl.col("hardware.layout.strategy") == "trivial")
+            & (pl.col("hardware.id").is_in(hardwares))
+            & (pl.col("circuit.id").is_in(algorithms))
+        )
+        .group_by("hardware.id", "circuit.id", "hardware.layout.k")
+        .agg(
+            serial_overhead=(pl.col("T_routed_serial") - pl.col("T_routed")).median(),
+        )
+        .filter(pl.col("hardware.layout.k") == 2)
+        .sort("circuit.id", "hardware.id")
+    )
+
+    def _fmt(val: float) -> str:
+        if val < 1e-7:
+            return "0"
+        elif val < 1e-4:
+            return f"{val * 1e9:.1f} ns"
+        elif val < 1e-3:
+            return f"{val * 1e6:.2f} µs"
+        elif val < 1:
+            return f"{val * 1e3:.3f} ms"
+        return f"{val:.4f} s"
+
+    print(f"{'circuit':<20}  {'hardware':<10}  overhead (k=2)")
+    print("-" * 48)
+    for row in result.iter_rows(named=True):
+        print(f"{row['circuit.id']:<20}  {row['hardware.id']:<10}  {_fmt(row['serial_overhead'])}")
+
+
 if __name__ == "__main__":
     for specifier in (
         "line_11x11",
